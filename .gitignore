@@ -1,0 +1,24 @@
+# Local password — NEVER commit
+config.local.txt
+
+# Master dashboard with plaintext customer data — do not publish
+Steel-Stud-Leads-Dashboard.html
+
+# Cowork artifact version history (large, machine-generated)
+versions/
+
+# Exports
+*.csv
+
+# Editor / OS noise
+.DS_Store
+Thumbs.db
+*.swp
+*.tmp
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Cowork thumbnail (regenerated each session)
+thumbnail.png

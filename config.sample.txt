@@ -1,0 +1,10 @@
+# Steel & Stud Dashboard — local password config
+# -----------------------------------------------
+# 1. Copy this file to `config.local.txt` (in the same folder).
+# 2. Replace the line below with the password you and your teammates will share.
+# 3. NEVER commit config.local.txt to git. It is already gitignored.
+#
+# Use a strong password (16+ characters, mixed case, numbers, symbols).
+# Anyone with the live URL + this password can decrypt the dashboard.
+
+change-me-to-a-long-shared-password
