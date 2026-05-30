@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: /
+
+# This is a private password-gated dashboard. Do not index.
