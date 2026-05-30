@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<script type="application/json" id="cowork-artifact-meta">
+{"name":"Steel & Stud Leads Dashboard","schemaVersion":1,"description":"Steel & Stud leads dashboard - last 30 days of steelandstud.com submissions (30 Apr-30 May 2026): 9 real leads (5 in WordPress + 4 carried over from email), 2 test, 9 spam. CF7 form #45547 removed site-wide on 30 May 2026 — every product page now uses Elementor form 8a4dfa0 with Collect Submissions enabled, so all future leads land directly in WordPress.","mcpTools":[],"mcpServerNames":[]}
+</script>
+<html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Steel & Stud — Leads Intelligence Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.js" integrity="sha384-iU8HYtnGQ8Cy4zl7gbNMOhsDTTKX02BTXptVP/vqAWIaTfM7isw76iyZCsjL2eVi" crossorigin="anonymous"></script>
+<style>
+:root{--bg:#0e1620;--pn:#16212f;--p2:#1b2838;--p3:#22324a;--ln:#2c3d54;--ink:#e8eef5;--mut:#8da2bb;--ac:#3b82f6;--gn:#22c55e;--am:#f59e0b;--rd:#ef4444;--pu:#a855f7;--ch:#243449}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5;padding:24px 20px 60px}
+.wrap{max-width:1340px;margin:0 auto}
+a{color:var(--ac)}
+.hd{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:18px}
+.eb{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ac);font-weight:700}
+h1{font-size:26px;font-weight:700;margin:4px 0 5px}
+.sub{color:var(--mut);font-size:13px}
+.acts{display:flex;gap:8px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:var(--ink);border:1px solid var(--ln);background:var(--p2);padding:8px 13px;border-radius:8px;cursor:pointer;white-space:nowrap}
+.btn:hover{border-color:var(--ac);background:var(--p3)}
+.btn.pri{background:var(--ac);border-color:var(--ac);color:#fff}
+.btn.pri:hover{background:#2f6fd6}
+.btn.sm{padding:5px 9px;font-size:11px}
+.panel{background:var(--pn);border:1px solid var(--ln);border-radius:12px;padding:16px 18px;margin-bottom:16px}
+.panel h3{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--mut);font-weight:700;margin-bottom:13px}
+.rb{display:flex;gap:16px 20px;flex-wrap:wrap;align-items:flex-end}
+.fld{display:flex;flex-direction:column;gap:5px}
+.fld label{font-size:11px;color:var(--mut);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+input[type=date],input[type=text],select{background:var(--bg);border:1px solid var(--ln);color:var(--ink);padding:7px 10px;border-radius:7px;font-size:13px;font-family:inherit}
+input[type=text]{min-width:190px}
+.chk{display:flex;gap:12px}
+.chk label{display:flex;align-items:center;gap:5px;font-size:12.5px;color:var(--ink);text-transform:none;letter-spacing:0;cursor:pointer}
+.chk input{accent-color:var(--ac);width:15px;height:15px}
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:16px}
+.kpi{background:var(--pn);border:1px solid var(--ln);border-radius:11px;padding:15px;border-top:3px solid var(--ln)}
+.kpi.k-real{border-top-color:var(--gn)}.kpi.k-spam{border-top-color:var(--rd)}.kpi.k-test{border-top-color:var(--am)}.kpi.k-tot{border-top-color:var(--ac)}.kpi.k-rate{border-top-color:var(--pu)}
+.kpi .l{font-size:10.5px;color:var(--mut);text-transform:uppercase;letter-spacing:.05em;font-weight:700}
+.kpi .v{font-size:30px;font-weight:700;margin-top:5px;letter-spacing:-.02em}
+.kpi .m{font-size:11px;color:var(--mut);margin-top:1px}
+.charts{display:grid;grid-template-columns:1.05fr 1.5fr;gap:14px;margin-bottom:16px}
+.charts .row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.cbox{background:var(--pn);border:1px solid var(--ln);border-radius:12px;padding:14px 16px}
+.cbox h4{font-size:12px;font-weight:700;margin-bottom:10px}
+.cwrap{position:relative;height:210px}
+h2.sec{font-size:14px;text-transform:uppercase;letter-spacing:.07em;font-weight:700;margin:6px 0 10px;display:flex;align-items:center;gap:9px}
+.cnt{font-size:11.5px;color:var(--mut);font-weight:400;text-transform:none;letter-spacing:0}
+.tbox{background:var(--pn);border:1px solid var(--ln);border-radius:12px;overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12px;min-width:1280px}
+th{text-align:left;font-size:9.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--mut);font-weight:700;padding:9px 8px;border-bottom:1px solid var(--ln);background:var(--p2);cursor:pointer;white-space:nowrap;user-select:none}
+th:hover{color:var(--ink)}
+th .ar{opacity:.5;font-size:9px}
+td{padding:8px;border-bottom:1px solid var(--ln);vertical-align:middle;font-size:12px}
+tbody tr.main:hover td{background:var(--p2)}
+tbody tr.main{cursor:pointer}
+.badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;white-space:nowrap}
+.b-Real{background:rgba(34,197,94,.16);color:#86efac}
+.b-Test{background:rgba(245,158,11,.16);color:#fcd34d}
+.b-Spam{background:rgba(239,68,68,.16);color:#fca5a5}
+.nm{font-weight:600}
+.msgcell{max-width:200px;color:var(--mut);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.msgcell a{color:var(--ac);text-decoration:none}
+.msgcell a:hover{text-decoration:underline}
+.msgcell.has{color:var(--ink)}
+.exp{display:inline-block;width:14px;color:var(--mut);transition:transform .15s}
+tr.open .exp{transform:rotate(90deg)}
+.det-row td{background:var(--p2);padding:0}
+.det-full{padding:16px 18px;display:flex;flex-direction:column;gap:15px}
+.dsec .dlabel,.msgblock .dlabel{font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--ac);font-weight:700;margin-bottom:7px}
+.msgblock{background:var(--bg);border:1px solid var(--ln);border-left:3px solid var(--gn);border-radius:8px;padding:12px 14px}
+.msgtext{font-size:14px;color:var(--ink);font-style:italic}
+.msgnone{font-size:13px;color:var(--mut);font-style:italic}
+.rawt{width:100%;border:1px solid var(--ln);border-radius:8px;overflow:hidden;font-size:12.5px}
+.rawt td{padding:7px 11px;border-bottom:1px solid var(--ln)}
+.rawt tr:last-child td{border-bottom:none}
+.rk{color:var(--mut);width:230px;background:var(--bg);font-weight:600}
+.rv{color:var(--ink);word-break:break-word}
+.rv i{color:var(--mut)}
+.kv{display:grid;grid-template-columns:repeat(2,1fr);gap:5px 24px}
+.kv .row{font-size:12.5px}
+.kv .row span{color:var(--mut);display:inline-block;min-width:150px}
+.kvn{grid-column:1/-1;font-size:12px;color:var(--mut);font-style:italic}
+.gmlink{display:inline-block;margin-top:9px;font-size:12.5px;font-weight:600}
+.dactions{display:flex;gap:8px;flex-wrap:wrap}
+.empty{padding:34px;text-align:center;color:var(--mut);font-size:13px}
+footer{margin-top:22px;font-size:11px;color:var(--mut);text-align:center;line-height:1.7}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;padding:20px;z-index:50}
+.modal.on{display:flex}
+.mbox{background:var(--pn);border:1px solid var(--ln);border-radius:14px;max-width:520px;padding:22px 24px}
+.mbox h3{font-size:16px;margin-bottom:10px}
+.mbox p{font-size:13px;color:var(--mut);margin-bottom:10px}
+.mbox b{color:var(--ink)}
+.mx{margin-top:8px;text-align:right}
+@media(max-width:900px){.kpis{grid-template-columns:repeat(2,1fr)}.charts{grid-template-columns:1fr}.charts .row2{grid-template-columns:1fr}.kv{grid-template-columns:1fr}.hideM{display:none}.rk{width:140px}}
+</style></head><body><div class="wrap">
+
+<div class="hd">
+  <div>
+    <div class="eb">Steel &amp; Stud &middot; KD Digital</div>
+    <h1>Leads Intelligence Dashboard</h1>
+    <div class="sub" id="sub"></div>
+  </div>
+  <div class="acts">
+    <button class="btn" onclick="openRefresh()">&#8635; Refresh data</button>
+    <button class="btn" onclick="window.print()">&#128424; Print</button>
+    <button class="btn" onclick="dlAll()">&#11015; Download all (CSV)</button>
+    <button class="btn pri" onclick="dlPage()">&#11015; Download dashboard</button>
+  </div>
+</div>
+
+<div class="panel" style="border-left:3px solid var(--gn);background:rgba(34,197,94,.07)">
+  <h3 style="color:var(--gn)">&#10003; All quote forms now Elementor &mdash; CF7 removed, popup-style quote modal restored</h3>
+  <div style="font-size:13px;color:var(--ink);line-height:1.6">
+    <b>Resolved 30 May 2026.</b> Contact Form 7 modal (form #45547) removed site-wide. Every product page now opens an Elementor popup with form <b>8a4dfa0</b> (save-to-database + email actions enabled). Clicking <b>&ldquo;Request a Free Quote Instead&rdquo;</b> opens a centered overlay containing the same form &mdash; restoring the popup UX users had with CF7, but now powered by Elementor so leads land directly in WordPress.
+    <br><br>
+    Email notifications still go to <b>sales@steelandstud.com</b>, <b>jerry@steelandstud.com</b>, and <b>seo@kunaldabi.info</b>. Close popup via the X button (top-right), clicking the dark backdrop, or pressing Escape.
+    <br><br>
+    <b>Page URL capture:</b> a hidden <code>page_url</code> field has been added to the form widget (in both templates #46400 and #48168). JS in the WPCode snippet injects the field and populates it with <code>window.location.href</code> on every product page load. The source URL now appears in the <code>[all-fields]</code> email body alongside name / phone / building type, and is captured in every WordPress submission record (visible in the dashboard&rsquo;s <code>raw</code> field).
+    <br><br>
+    Implementation: CF7 wp_footer injection removed from WPCode snippet #57701 (lines 186&ndash;252 deleted). New popup modal block appended (CSS + overlay div + JS handlers, scoped to <code>body.single-product</code>). The inline Elementor form section remains in DOM (hidden by default; displayed as modal when triggered). Backups + Phase A/B audit trail in <code>backups/2026-05-30/</code>.
+  </div>
+</div>
+<div class="panel">
+  <h3>Report Builder</h3>
+  <div class="rb">
+    <div class="fld"><label>From date</label><input type="date" id="fFrom" value="2026-04-30"></div>
+    <div class="fld"><label>To date</label><input type="date" id="fTo" value="2026-05-30"></div>
+    <div class="fld"><label>Category</label><div class="chk">
+      <label><input type="checkbox" id="cReal" checked>Real</label>
+      <label><input type="checkbox" id="cTest" checked>Test</label>
+      <label><input type="checkbox" id="cSpam" checked>Spam</label>
+    </div></div>
+    <div class="fld"><label>Building type</label><select id="fType"></select></div>
+    <div class="fld"><label>Form</label><select id="fForm"></select></div>
+    <div class="fld"><label>Search</label><input type="text" id="fSearch" placeholder="name, email, phone, message..."></div>
+    <div class="fld"><label>&nbsp;</label><div style="display:flex;gap:8px">
+      <button class="btn pri" onclick="runReport()">&#9654; Run Report</button>
+      <button class="btn" onclick="resetReport()">Reset</button>
+    </div></div>
+  </div>
+</div>
+
+<div class="kpis" id="kpis"></div>
+
+<div class="charts">
+  <div class="cbox"><h4>Category split</h4><div class="cwrap"><canvas id="chCat"></canvas></div></div>
+  <div class="cbox"><h4>Submissions over time</h4><div class="cwrap"><canvas id="chTime"></canvas></div></div>
+  <div class="row2">
+    <div class="cbox"><h4>Real leads by building type</h4><div class="cwrap"><canvas id="chBld"></canvas></div></div>
+    <div class="cbox"><h4>Spam by type</h4><div class="cwrap"><canvas id="chSpam"></canvas></div></div>
+  </div>
+</div>
+
+<h2 class="sec">Records <span class="cnt" id="recCnt"></span></h2>
+<div class="sub" style="margin-bottom:10px;color:var(--mut)">Click any row to expand the full submission — customer message, every raw form field, and source/device detail.</div>
+<div class="tbox"><table id="tbl">
+  <thead><tr>
+    <th style="width:26px"></th>
+    <th data-k="cat">Category <span class="ar">&#8645;</span></th>
+    <th data-k="date">Date <span class="ar">&#8645;</span></th>
+    <th data-k="name">Name <span class="ar">&#8645;</span></th>
+    <th data-k="email">Email <span class="ar">&#8645;</span></th>
+    <th data-k="phone">Phone <span class="ar">&#8645;</span></th>
+    <th data-k="type">Looking For <span class="ar">&#8645;</span></th>
+    <th data-k="size">Size <span class="ar">&#8645;</span></th>
+    <th data-k="zip">ZIP <span class="ar">&#8645;</span></th>
+    <th data-k="pageUrl">Source Page <span class="ar">&#8645;</span></th>
+    <th data-k="form">Form <span class="ar">&#8645;</span></th>
+    <th data-k="msg">Message <span class="ar">&#8645;</span></th>
+    <th style="width:70px">Record</th>
+  </tr></thead>
+  <tbody id="tbody"></tbody>
+</table><div class="empty" id="empty" style="display:none">No records match the current filters.</div></div>
+
+<footer id="foot"></footer>
+</div>
+
+<div class="modal" id="rfModal"><div class="mbox">
+  <h3>&#8635; Refreshing lead data</h3>
+  <p>This dashboard is a <b>snapshot</b> taken on 28 May 2026 from the <b>steelandstud.com WordPress form submissions</b> (Elementor). A downloaded HTML file cannot reach WordPress on its own, so it does not auto-update.</p>
+  <p>To pull the latest leads:</p>
+  <p>&bull; <b>Automatic:</b> the daily Steel &amp; Stud lead-tracking task refreshes the data each morning (Mon&ndash;Sat).<br>
+     &bull; <b>On demand:</b> open Cowork and ask Claude to &ldquo;refresh the Steel &amp; Stud leads&rdquo; &mdash; it re-reads the WordPress submissions and regenerates this dashboard.</p>
+  <div class="mx"><button class="btn pri" onclick="closeRefresh()">Got it</button></div>
+</div></div>
+
+<script>
+var WPBASE="https://www.steelandstud.com/wp-admin/admin.php?page=e-form-submissions";
+/* Each record carries the verbatim customer message (msg), the complete raw
+   submission exactly as it arrived (raw), source/device metadata where the
+   notification email captured it, and the email envelope. */
+var DATA=[
+{"id": "QF-JS2", "cat": "Real", "date": "2026-05-29", "dd": "29 May 2026", "time": "18:45", "name": "jesse smith", "email": "jpjhayward@yahoo.com", "phone": "318 376 0769", "zip": "", "type": "Garage", "size": "10 x 10 x 8 ft (100 sq ft)", "surface": "", "form": "Quote Form (email)", "msg": "preferably dark grey walls, one man door, and one roll up door as pictured", "note": "FROM EMAIL NOTIFICATION — came through CF7 form #45547 (since removed). Small garage build: 10x10x8 ft. Customer specified dark grey walls, one man door, one roll-up door. Phone 318 = NE Louisiana (Monroe / Shreveport area).", "region": "Phone 318 = NE Louisiana (Monroe / Shreveport)", "stype": "", "is_read": false, "wpid": 0, "submitted": "29 May 2026, 18:45", "received": "29 May 2026, 18:45", "pageUrl": "", "browser": "", "ip": "", "gmail": "", "subject": "New Quote Request: Garage", "from": "Steel and Stud <jacob@steelandstud.com>", "recipients": "sales@steelandstud.com, jerry@steelandstud.com, seo@kunaldabi.info", "raw": [["Name", "jesse smith"], ["Email", "jpjhayward@yahoo.com"], ["Phone", "3183760769"], ["Building Type", "Garage"], ["Width", "10 ft"], ["Length", "10 ft"], ["Height", "8 ft"], ["Approx. Sq Ft", "100 sq ft"], ["Details", "preferably dark grey walls, one man door, and one roll up door as pictured\n\nthanks"]]},
+{"id": "WP-90", "cat": "Real", "date": "2026-05-27", "dd": "27 May 2026", "time": "16:18", "name": "francis woyak", "email": "chasetruck61@gmail.com", "phone": "920 222 1174", "zip": "", "type": "Not specified", "size": "32 x 48 x 12 ft", "surface": "", "form": "Quote Form", "msg": "12x12 ft door on gable end", "note": "New quote request — did not pick a building type on the form, so follow up to qualify. Notes a 12x12 ft door on the gable end. Phone area code 920 is Northeast Wisconsin (Green Bay / Appleton).", "region": "Phone 920 = NE Wisconsin (Green Bay / Appleton)", "stype": "", "is_read": true, "wpid": 90, "submitted": "27 May 2026, 16:18", "received": "27 May 2026, 16:18", "pageUrl": "https://www.steelandstud.com/metal-buildings/24x40/", "browser": "", "ip": "", "gmail": "", "subject": "", "from": "", "recipients": "", "raw": [["What are you looking for?", "— not selected —"], ["Approximate Size Needed", "32x48x12 ft"], ["First Name", "francis"], ["Last Name", "woyak"], ["Email", "chasetruck61@gmail.com"], ["Phone", "9202221174"], ["Additional Details", "12x12 ft door on gable end"]]},
+{"id": "WP-89", "cat": "Real", "date": "2026-05-23", "dd": "23 May 2026", "time": "21:33", "name": "Shawn Dennis", "email": "shawn.dennis.construction@gmail.com", "phone": "715 661 0156", "zip": "", "type": "Not specified", "size": "60 x 40 x 10 ft", "surface": "", "form": "Quote Form", "msg": "", "note": "New quote request — did not pick a building type on the form, so follow up to qualify. Phone area code 715 is Wisconsin; the email handle (shawn.dennis.construction) suggests a contractor.", "region": "Phone 715 = Wisconsin", "stype": "", "is_read": true, "wpid": 89, "submitted": "23 May 2026, 21:33", "received": "23 May 2026, 21:33", "pageUrl": "https://www.steelandstud.com/metal-buildings/60x40/", "browser": "", "ip": "", "gmail": "", "subject": "", "from": "", "recipients": "", "raw": [["What are you looking for?", "— not selected —"], ["Approximate Size Needed", "60x40x10 ft"], ["First Name", "Shawn"], ["Last Name", "Dennis"], ["Email", "shawn.dennis.construction@gmail.com"], ["Phone", "7156610156"]]},
+{"id": "WP-86", "cat": "Real", "date": "2026-05-15", "dd": "15 May 2026", "time": "23:00", "name": "D Youll", "email": "d.youll@att.net", "phone": "918 519 9701", "zip": "", "type": "Not specified", "size": "50 x 40 x 30 ft", "surface": "", "form": "Quote Form", "msg": "", "note": "Quote request — did not select a building type on the form; follow up to qualify. Phone is Oklahoma.", "region": "Phone 918 = Oklahoma", "stype": "", "is_read": true, "wpid": 86, "submitted": "15 May 2026, 23:00", "received": "15 May 2026, 23:00", "pageUrl": "https://www.steelandstud.com/metal-buildings/50x30/", "browser": "", "ip": "", "gmail": "", "subject": "", "from": "", "recipients": "", "raw": [["What are you looking for?", "— not selected —"], ["Approximate Size Needed", "50x40x30 ft"], ["First Name", "D"], ["Last Name", "Youll"], ["Email", "d.youll@att.net"], ["Phone", "9185199701"]]},
+{"id": "WP-85", "cat": "Real", "date": "2026-05-12", "dd": "12 May 2026", "time": "08:40", "name": "ray marsh", "email": "gregmarsh1@hotmail.com", "phone": "513 734 6814", "zip": "", "type": "Barn", "size": "Small (up to 400 sq ft)", "surface": "", "form": "Quote Form", "msg": "16'x16'", "note": "Small barn enquiry, approx 16x16 ft. Phone is the Cincinnati, OH area.", "region": "Phone 513 = Cincinnati, OH area", "stype": "", "is_read": true, "wpid": 85, "submitted": "12 May 2026, 08:40", "received": "12 May 2026, 08:40", "pageUrl": "https://www.steelandstud.com/metal-buildings/16x16/#quote", "browser": "", "ip": "", "gmail": "", "subject": "", "from": "", "recipients": "", "raw": [["What are you looking for?", "Barn"], ["Approximate Size Needed", "Small (up to 400 sq ft)"], ["First Name", "ray"], ["Last Name", "marsh"], ["Email", "gregmarsh1@hotmail.com"], ["Phone", "5137346814"], ["Additional Details", "16'x16'"]]},
+{"id": "WP-78", "cat": "Real", "date": "2026-05-02", "dd": "2 May 2026", "time": "19:34", "name": "Lisa Riendeau", "email": "Lmriendeau2006@gmail.com", "phone": "860 951 8114", "zip": "060118", "type": "Carport", "size": "26 W x 20 L x 10 H", "surface": "Asphalt", "form": "Carports Form", "msg": "", "note": "Carport with full dimensions (26x20x10) and asphalt surface. Arrived via a ChatGPT referral link. Connecticut.", "region": "ZIP 06011x / phone 860 = Connecticut", "stype": "", "is_read": true, "wpid": 78, "submitted": "2 May 2026, 19:34", "received": "2 May 2026, 19:34", "pageUrl": "https://www.steelandstud.com/", "browser": "", "ip": "", "gmail": "", "subject": "", "from": "", "recipients": "", "raw": [["What are you looking for?", "Carport"], ["Width", "26"], ["Length", "20"], ["Height", "10"], ["First Name", "Lisa"], ["Last Name", "Riendeau"], ["Email", "Lmriendeau2006@gmail.com"], ["Phone", "8609518114"], ["Surface", "Asphalt"], ["ZIP Code", "060118"]]},
+{"id": "QF-EO", "cat": "Real", "date": "2026-05-19", "dd": "19 May 2026", "time": "18:43", "name": "Eddie Oakes", "email": "eddie@valuetruckaz.com", "phone": "602 625 1273", "zip": "76259", "type": "Barndominium", "size": "50 x 120 x 14", "surface": "", "form": "Quote Form (email)", "msg": "I'm looking to use it as a house shop combo", "note": "FROM EMAIL NOTIFICATION — the main Quote Form is not saving submissions to WordPress, so this lead is not in the WP database. Strong lead; valid Texas ZIP and Arizona phone.", "region": "ZIP 76259 = Justin, TX area; phone 602 = Phoenix, AZ", "stype": "", "is_read": true, "wpid": 0, "submitted": "19 May 2026, 18:43", "received": "19 May 2026, 18:43", "pageUrl": "", "browser": "", "ip": "", "gmail": "", "subject": "", "from": "", "recipients": "", "raw": [["Building Type", "Barndominium"], ["Name", "Eddie Oakes"], ["Email", "eddie@valuetruckaz.com"], ["Phone", "6026251273"], ["Zip Code", "76259"], ["Approx Size", "50x120x14"], ["Additional Details", "I'm looking to use it as a house shop combo"]]},
+{"id": "QF-JS", "cat": "Real", "date": "2026-05-18", "dd": "18 May 2026", "time": "21:32", "name": "Josh Saksa", "email": "helenaflowerfarmer@gmail.com", "phone": "406 475 5191", "zip": "59602", "type": "Barn", "size": "40 x 80 x 16", "surface": "", "form": "Quote Form (email)", "msg": "Agriculture", "note": "FROM EMAIL NOTIFICATION — not saved in the WP database (see Quote Form storage note). Agricultural barn; ZIP and phone both Montana.", "region": "ZIP 59602 = Helena, MT; phone 406 = Montana", "stype": "", "is_read": true, "wpid": 0, "submitted": "18 May 2026, 21:32", "received": "18 May 2026, 21:32", "pageUrl": "", "browser": "", "ip": "", "gmail": "", "subject": "", "from": "", "recipients": "", "raw": [["Building Type", "Barn"], ["Name", "Josh Saksa"], ["Email", "helenaflowerfarmer@gmail.com"], ["Phone", "4064755191"], ["Zip Code", "59602"], ["Approx Size", "40x80x16"], ["Additional Details", "Agriculture"]]},
+{"id": "QF-TS", "cat": "Real", "date": "2026-05-06", "dd": "6 May 2026", "time": "20:36", "name": "Tom Samuels", "email": "solarenergyconsultantsofcfl@gmail.com", "phone": "786 578 2145", "zip": "37861", "type": "Carport", "size": "40 x 40 x 14", "surface": "", "form": "Quote Form (email)", "msg": "Just a basic carport for my truck and workshop", "note": "FROM EMAIL NOTIFICATION — not saved in the WP database (see Quote Form storage note). ZIP Tennessee, phone Miami FL.", "region": "ZIP 37861 = Tennessee; phone 786 = Miami, FL", "stype": "", "is_read": true, "wpid": 0, "submitted": "6 May 2026, 20:36", "received": "6 May 2026, 20:36", "pageUrl": "", "browser": "", "ip": "", "gmail": "", "subject": "", "from": "", "recipients": "", "raw": [["Building Type", "Carport"], ["Name", "Tom Samuels"], ["Email", "solarenergyconsultantsofcfl@gmail.com"], ["Phone", "7865782145"], ["Zip Code", "37861"], ["Approx Size", "40x40x14"], ["Additional Details", "Just a basic carport for my truck and workshop"]]},
+{"id": "QF-KS", "cat": "Real", "date": "2026-05-06", "dd": "6 May 2026", "time": "02:59", "name": "Karen Smith", "email": "tatervaw123@hotmail.com", "phone": "606 634 0135", "zip": "41858", "type": "Garage", "size": "20 x 40 x 10", "surface": "", "form": "Quote Form (email)", "msg": "", "note": "FROM EMAIL NOTIFICATION — not saved in the WP database (see Quote Form storage note). ZIP and phone both Kentucky.", "region": "ZIP 41858 = Whitesburg, KY; phone 606 = Kentucky", "stype": "", "is_read": true, "wpid": 0, "submitted": "6 May 2026, 02:59", "received": "6 May 2026, 02:59", "pageUrl": "", "browser": "", "ip": "", "gmail": "", "subject": "", "from": "", "recipients": "", "raw": [["Building Type", "Garage"], ["Name", "Karen Smith"], ["Email", "tatervaw123@hotmail.com"], ["Phone", "6066340135"], ["Zip Code", "41858"], ["Approx Size", "20x40x10"]]},
+{"id": "WP-88", "cat": "Test", "date": "2026-05-21", "dd": "21 May 2026", "time": "08:17", "name": "test", "email": "test@test.com", "phone": "0000000000", "zip": "00000", "type": "Carport", "size": "—", "surface": "", "form": "Main Quote Form", "msg": "test", "note": "Internal test — placeholder data (test@test.com, all-zero fields) via the contact-us page. This is the only submission the main Quote Form has saved to WordPress.", "region": "", "stype": "", "is_read": false, "wpid": 88, "submitted": "21 May 2026, 08:17", "received": "21 May 2026, 08:17", "pageUrl": "https://www.steelandstud.com/contact-us/", "browser": "", "ip": "", "gmail": "", "subject": "", "from": "", "recipients": "", "raw": [["Building Type", "Carport"], ["Name", "test"], ["Zip Code", "00000"], ["Email", "test@test.com"], ["Phone", "0000000000"], ["Width", "0"], ["Length", "0"], ["Height", "0"], ["Additional Details", "test"]]},
+{"id": "WP-87", "cat": "Test", "date": "2026-05-18", "dd": "18 May 2026", "time": "11:38", "name": "Test Test", "email": "test@yahoo.com", "phone": "916 222 5555", "zip": "72715", "type": "Garage", "size": "20 x 40 x 12", "surface": "Asphalt", "form": "Carports Form", "msg": "trying to see which form is being used", "note": "Internal test — name 'Test Test'; message confirms a form test.", "region": "", "stype": "", "is_read": true, "wpid": 87, "submitted": "18 May 2026, 11:38", "received": "18 May 2026, 11:38", "pageUrl": "https://www.steelandstud.com/#quote", "browser": "", "ip": "", "gmail": "", "subject": "", "from": "", "recipients": "", "raw": [["What are you looking for?", "Garage"], ["Width", "20"], ["Length", "40"], ["Height", "12"], ["First Name", "Test"], ["Last Name", "Test"], ["Email", "test@yahoo.com"], ["Phone", "9162225555"], ["Surface", "Asphalt"], ["ZIP Code", "72715"], ["Additional Details", "trying to see which form is being used"]]},
+{"id": "WP-84", "cat": "Spam", "date": "2026-05-11", "dd": "11 May 2026", "time": "09:26", "name": "Michaellat MichaellatIV", "email": "s.t.e.p.ha.n.ie.bur.t.o.lom.e.w.@gmail.com", "phone": "87459916116", "zip": "145252", "type": "Barn", "size": "", "surface": "", "form": "Carports Form", "msg": "Real-estate form-spam: a Gmail address was stuffed into the Width field and a BBCode [url] link to a 'cash home buyers' site placed in the Height field.", "note": "Form-spam bot — real-estate 'cash home buyers' link.", "region": "", "stype": "Form-spam bot", "is_read": true, "wpid": 84, "submitted": "11 May 2026, 09:26", "received": "11 May 2026, 09:26", "pageUrl": "", "browser": "", "ip": "", "gmail": "", "subject": "", "from": "", "recipients": "", "raw": [["What are you looking for?", "Barn"], ["Width", "s.t.e.p.ha.n.ie.bur.t.o.lom.e.w.@gmail.com"], ["Length", "13"], ["Height", "[url=https://www.stephburtcashoffers.com/sell-my-house-fast-decatur-georgia/]cash purchasers in porterdale[/url]"], ["Name", "Michaellat MichaellatIV"], ["Email", "s.t.e.p.ha.n.ie.bur.t.o.lom.e.w.@gmail.com"], ["Phone", "87459916116"], ["Surface", "Gravel"], ["ZIP Code", "145252"]]},
+{"id": "WP-83", "cat": "Spam", "date": "2026-05-08", "dd": "8 May 2026", "time": "07:58", "name": "RobertCoozy EdwardCoozyGM", "email": "zekisuquc419@gmail.com", "phone": "89515682671", "zip": "124231", "type": "RV Cover", "size": "", "surface": "", "form": "Carports Form", "msg": "Form-spam bot — email address stuffed into the Width field; one-line message in Bulgarian ('I wanted to know your price'). Recurring sender zekisuquc419@gmail.com.", "note": "Repeat form-spam bot — zekisuquc419@gmail.com.", "region": "", "stype": "Form-spam bot", "is_read": false, "wpid": 83, "submitted": "8 May 2026, 07:58", "received": "8 May 2026, 07:58", "pageUrl": "", "browser": "", "ip": "", "gmail": "", "subject": "", "from": "", "recipients": "", "raw": [["What are you looking for?", "RV Cover"], ["Width", "zekisuquc419@gmail.com"], ["Length", "15"], ["Name", "RobertCoozy EdwardCoozyGM"], ["Email", "zekisuquc419@gmail.com"], ["Phone", "89515682671"], ["Surface", "Ground"], ["ZIP Code", "124231"], ["Additional Details", "Здравейте, исках да знам цената ви."]]},
+{"id": "WP-82", "cat": "Spam", "date": "2026-05-06", "dd": "6 May 2026", "time": "21:22", "name": "RobertCoozy BryanCoozyGM", "email": "zekisuquc419@gmail.com", "phone": "84912393936", "zip": "152512", "type": "Garage", "size": "", "surface": "", "form": "Carports Form", "msg": "Form-spam bot — same zekisuquc419 pattern; one-line message in Latvian.", "note": "Repeat form-spam bot — zekisuquc419@gmail.com.", "region": "", "stype": "Form-spam bot", "is_read": false, "wpid": 82, "submitted": "6 May 2026, 21:22", "received": "6 May 2026, 21:22", "pageUrl": "", "browser": "", "ip": "", "gmail": "", "subject": "", "from": "", "recipients": "", "raw": [["What are you looking for?", "Garage"], ["Width", "zekisuquc419@gmail.com"], ["Length", "33"], ["Name", "RobertCoozy BryanCoozyGM"], ["Email", "zekisuquc419@gmail.com"], ["Phone", "84912393936"], ["Surface", "Other"], ["ZIP Code", "152512"], ["Additional Details", "Sveiki, es gribēju zināt savu cenu."]]},
+{"id": "WP-81", "cat": "Spam", "date": "2026-05-05", "dd": "5 May 2026", "time": "09:35", "name": "Daviddeata DaviddeataDS", "email": "no.reply.MikaelSchneider@gmail.com", "phone": "83955199943", "zip": "111453", "type": "Garage", "size": "", "surface": "", "form": "Carports Form", "msg": "Advertises a form-spam service itself — 'we deliver messages directly through website forms' — with Telegram and WhatsApp contacts.", "note": "Form-spam tool advertisement.", "region": "", "stype": "SEO solicitation", "is_read": true, "wpid": 81, "submitted": "5 May 2026, 09:35", "received": "5 May 2026, 09:35", "pageUrl": "", "browser": "", "ip": "", "gmail": "", "subject": "", "from": "", "recipients": "", "raw": [["What are you looking for?", "Garage"], ["Width", "no.reply.MikaelSchneider@gmail.com"], ["Length", "14"], ["Height", "https://www.no-site.com"], ["Name", "Daviddeata DaviddeataDS"], ["Email", "no.reply.MikaelSchneider@gmail.com"], ["Phone", "83955199943"], ["Surface", "Asphalt"], ["ZIP Code", "111453"], ["Additional Details", "Hey there! steelandstud.com — We provide a tool that delivers messages directly through website forms ... Contact us. Telegram - t.me/FeedbackFormEU, WhatsApp +375259112693"]]},
+{"id": "WP-80", "cat": "Spam", "date": "2026-05-04", "dd": "4 May 2026", "time": "19:26", "name": "RobertCoozy JordanCoozyGM", "email": "zekisuquc419@gmail.com", "phone": "81739691733", "zip": "121543", "type": "Commercial", "size": "", "surface": "", "form": "Carports Form", "msg": "Form-spam bot — zekisuquc419 pattern; one-line message in Luxembourgish.", "note": "Repeat form-spam bot — zekisuquc419@gmail.com.", "region": "", "stype": "Form-spam bot", "is_read": false, "wpid": 80, "submitted": "4 May 2026, 19:26", "received": "4 May 2026, 19:26", "pageUrl": "", "browser": "", "ip": "", "gmail": "", "subject": "", "from": "", "recipients": "", "raw": [["What are you looking for?", "Commercial"], ["Width", "zekisuquc419@gmail.com"], ["Length", "35"], ["Name", "RobertCoozy JordanCoozyGM"], ["Email", "zekisuquc419@gmail.com"], ["Phone", "81739691733"], ["Surface", "Asphalt"], ["ZIP Code", "121543"], ["Additional Details", "Salut, ech wollt Äre Präis wëssen."]]},
+{"id": "WP-79", "cat": "Spam", "date": "2026-05-04", "dd": "4 May 2026", "time": "04:53", "name": "Clyderow ClyderowHV", "email": "info703@bounce3d.store", "phone": "81153664693", "zip": "115115", "type": "Barndominium", "size": "", "surface": "", "form": "Carports Form", "msg": "Online-gambling spam — 'telegram online pokies australia' with a Telegram channel link.", "note": "Online-gambling (pokies) spam.", "region": "", "stype": "Gambling spam", "is_read": true, "wpid": 79, "submitted": "4 May 2026, 04:53", "received": "4 May 2026, 04:53", "pageUrl": "", "browser": "", "ip": "", "gmail": "", "subject": "", "from": "", "recipients": "", "raw": [["What are you looking for?", "Barndominium"], ["Width", "info703@bounce3d.store"], ["Length", "31"], ["Height", "https://t.me/s/pokies_australia_online_telegram"], ["Name", "Clyderow ClyderowHV"], ["Email", "info703@bounce3d.store"], ["Phone", "81153664693"], ["Surface", "Other"], ["ZIP Code", "115115"], ["Additional Details", "telegram online pokies australia https://t.me/s/pokies_australia_online_telegram"]]},
+{"id": "WP-77", "cat": "Spam", "date": "2026-05-01", "dd": "1 May 2026", "time": "00:38", "name": "RobertCoozy TerryCoozyGM", "email": "zekisuquc419@gmail.com", "phone": "89148392556", "zip": "132251", "type": "Barndominium", "size": "", "surface": "", "form": "Carports Form", "msg": "Form-spam bot — zekisuquc419 pattern; one-line message in Armenian.", "note": "Repeat form-spam bot — zekisuquc419@gmail.com.", "region": "", "stype": "Form-spam bot", "is_read": false, "wpid": 77, "submitted": "1 May 2026, 00:38", "received": "1 May 2026, 00:38", "pageUrl": "", "browser": "", "ip": "", "gmail": "", "subject": "", "from": "", "recipients": "", "raw": [["What are you looking for?", "Barndominium"], ["Width", "zekisuquc419@gmail.com"], ["Length", "53"], ["Name", "RobertCoozy TerryCoozyGM"], ["Email", "zekisuquc419@gmail.com"], ["Phone", "89148392556"], ["Surface", "Asphalt"], ["ZIP Code", "132251"], ["Additional Details", "Ողջույն, ես ուզում էի իմանալ ձեր գինը."]]},
+{"id": "WP-76", "cat": "Spam", "date": "2026-04-30", "dd": "30 Apr 2026", "time": "16:34", "name": "NARYTHY1057340NEWETREWT", "email": "svvbvbfn@bekommenmail.com", "phone": "89345981871", "zip": "142552", "type": "Commercial", "size": "", "surface": "", "form": "Carports Form", "msg": "Random-string bot — every field filled with gibberish characters.", "note": "Random-string bot.", "region": "", "stype": "Form-spam bot", "is_read": false, "wpid": 76, "submitted": "30 Apr 2026, 16:34", "received": "30 Apr 2026, 16:34", "pageUrl": "", "browser": "", "ip": "", "gmail": "", "subject": "", "from": "", "recipients": "", "raw": [["What are you looking for?", "Commercial"], ["Width", "svvbvbfn@bekommenmail.com"], ["Length", "31"], ["Name", "NARYTHY1057340NEWETREWT NARYTHY1057340NEWETREWT"], ["Email", "svvbvbfn@bekommenmail.com"], ["Phone", "89345981871"], ["Surface", "Other"], ["ZIP Code", "142552"], ["Additional Details", "MERTHYTJTJ1057340MAVNGHJTH"]]},
+{"id": "WP-75", "cat": "Spam", "date": "2026-04-30", "dd": "30 Apr 2026", "time": "03:12", "name": "NARYTHY1934274NERTHRRTH", "email": "vuwnedmn@duhastmail.com", "phone": "88811256821", "zip": "141534", "type": "Barndominium", "size": "", "surface": "", "form": "Carports Form", "msg": "Random-string bot — every field filled with gibberish characters.", "note": "Random-string bot.", "region": "", "stype": "Form-spam bot", "is_read": false, "wpid": 75, "submitted": "30 Apr 2026, 03:12", "received": "30 Apr 2026, 03:12", "pageUrl": "", "browser": "", "ip": "", "gmail": "", "subject": "", "from": "", "recipients": "", "raw": [["What are you looking for?", "Barndominium"], ["Width", "vuwnedmn@duhastmail.com"], ["Length", "21"], ["Name", "NARYTHY1934274NERTHRRTH NARYTHY1934274NERTHRRTH"], ["Email", "vuwnedmn@duhastmail.com"], ["Phone", "88811256821"], ["Surface", "Ground"], ["ZIP Code", "141534"], ["Additional Details", "MERTYHR1934274MARETRYTR"]]},
+];
+var META={generated:"30 May 2026",rangeStart:"2026-04-30",rangeEnd:"2026-05-30",source:"WordPress form submissions"};
+
+var state={sortK:"date",sortDir:-1,open:{}};
+var charts={};
+function esc(t){return(""+(t==null?"":t)).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
+function uniq(a){return a.filter(function(v,i){return a.indexOf(v)===i;});}
+function csvCell(v){v=""+(v==null?"":v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;}
+function clip(t,n){t=""+(t||"");return t.length>n?t.slice(0,n-1)+"…":t;}
+
+function getFilters(){return{
+  from:document.getElementById("fFrom").value,to:document.getElementById("fTo").value,
+  real:document.getElementById("cReal").checked,test:document.getElementById("cTest").checked,spam:document.getElementById("cSpam").checked,
+  type:document.getElementById("fType").value,form:document.getElementById("fForm").value,
+  q:document.getElementById("fSearch").value.trim().toLowerCase()};}
+function applyFilters(){
+  var f=getFilters();
+  return DATA.filter(function(r){
+    if(f.from&&r.date<f.from)return false;
+    if(f.to&&r.date>f.to)return false;
+    if(r.cat==="Real"&&!f.real)return false;
+    if(r.cat==="Test"&&!f.test)return false;
+    if(r.cat==="Spam"&&!f.spam)return false;
+    if(f.type!=="All"&&r.type!==f.type)return false;
+    if(f.form!=="All"&&r.form!==f.form)return false;
+    if(f.q){var b=(r.name+" "+r.email+" "+r.phone+" "+r.type+" "+r.zip+" "+r.msg+" "+r.note+" "+r.stype+" "+r.region+" "+r.ip).toLowerCase();if(b.indexOf(f.q)<0)return false;}
+    return true;
+  });
+}
+function runReport(){render();}
+function resetReport(){
+  document.getElementById("fFrom").value="2026-04-30";document.getElementById("fTo").value="2026-05-30";
+  document.getElementById("cReal").checked=true;document.getElementById("cTest").checked=true;document.getElementById("cSpam").checked=true;
+  document.getElementById("fType").value="All";document.getElementById("fForm").value="All";document.getElementById("fSearch").value="";
+  render();
+}
+function render(){var rows=applyFilters();renderKpis(rows);renderCharts(rows);renderTable(rows);}
+function renderKpis(rows){
+  var real=rows.filter(function(r){return r.cat==="Real";}).length;
+  var test=rows.filter(function(r){return r.cat==="Test";}).length;
+  var spam=rows.filter(function(r){return r.cat==="Spam";}).length;
+  var tot=rows.length,rate=tot?Math.round(real/tot*100):0;
+  var k=[["k-tot","Records shown",tot,"after filters"],["k-real","Real leads",real,"genuine quote requests"],
+    ["k-test","Test",test,"internal form tests"],["k-spam","Spam",spam,"junk / bots / scams"],
+    ["k-rate","Real-lead rate",rate+"%","of records shown"]];
+  document.getElementById("kpis").innerHTML=k.map(function(x){return '<div class="kpi '+x[0]+'"><div class="l">'+x[1]+'</div><div class="v">'+x[2]+'</div><div class="m">'+x[3]+'</div></div>';}).join("");
+}
+function mkChart(id,cfg){if(charts[id])charts[id].destroy();charts[id]=new Chart(document.getElementById(id),cfg);}
+var GRID={color:"rgba(140,162,187,.12)"},TICK={color:"#8da2bb",font:{size:10}};
+function renderCharts(rows){
+  var real=rows.filter(function(r){return r.cat==="Real";}).length;
+  var test=rows.filter(function(r){return r.cat==="Test";}).length;
+  var spam=rows.filter(function(r){return r.cat==="Spam";}).length;
+  mkChart("chCat",{type:"doughnut",data:{labels:["Real","Test","Spam"],datasets:[{data:[real,test,spam],backgroundColor:["#22c55e","#f59e0b","#ef4444"],borderColor:"#16212f",borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:"right",labels:{color:"#e8eef5",font:{size:11},boxWidth:12}}}}});
+  var byDay={};rows.forEach(function(r){byDay[r.date]=byDay[r.date]||{Real:0,Test:0,Spam:0};byDay[r.date][r.cat]++;});
+  var days=Object.keys(byDay).sort();
+  mkChart("chTime",{type:"bar",data:{labels:days.map(function(d){return d.slice(8)+"/"+d.slice(5,7);}),datasets:[
+    {label:"Real",data:days.map(function(d){return byDay[d].Real;}),backgroundColor:"#22c55e"},
+    {label:"Test",data:days.map(function(d){return byDay[d].Test;}),backgroundColor:"#f59e0b"},
+    {label:"Spam",data:days.map(function(d){return byDay[d].Spam;}),backgroundColor:"#ef4444"}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:"#e8eef5",font:{size:10},boxWidth:11}}},scales:{x:{stacked:true,grid:GRID,ticks:TICK},y:{stacked:true,grid:GRID,ticks:TICK,beginAtZero:true}}}});
+  var bld={};rows.filter(function(r){return r.cat==="Real";}).forEach(function(r){bld[r.type]=(bld[r.type]||0)+1;});
+  var bk=Object.keys(bld);
+  mkChart("chBld",{type:"bar",data:{labels:bk,datasets:[{data:bk.map(function(k){return bld[k];}),backgroundColor:"#3b82f6"}]},options:{indexAxis:"y",responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:GRID,ticks:TICK,beginAtZero:true},y:{grid:GRID,ticks:TICK}}}});
+  var sp2={};rows.filter(function(r){return r.cat==="Spam";}).forEach(function(r){sp2[r.stype]=(sp2[r.stype]||0)+1;});
+  var sk=Object.keys(sp2);
+  mkChart("chSpam",{type:"bar",data:{labels:sk,datasets:[{data:sk.map(function(k){return sp2[k];}),backgroundColor:["#a855f7","#ef4444","#3b82f6","#f59e0b","#ec4899","#8da2bb"]}]},options:{indexAxis:"y",responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:GRID,ticks:TICK,beginAtZero:true},y:{grid:GRID,ticks:TICK}}}});
+}
+function kvrow(l,v){return v?'<div class="row"><span>'+esc(l)+'</span>'+esc(v)+'</div>':"";}
+function renderTable(rows){
+  var s=rows.slice().sort(function(a,b){var x=a[state.sortK]||"",y=b[state.sortK]||"";return (x<y?-1:x>y?1:0)*state.sortDir;});
+  document.getElementById("recCnt").textContent="("+rows.length+" of "+DATA.length+" records)";
+  document.getElementById("empty").style.display=s.length?"none":"block";
+  document.getElementById("tbody").innerHTML=s.map(function(r){
+    var mc=r.cat==="Spam"?r.note:(r.msg||"");
+    var pageHost=r.pageUrl?(r.pageUrl.replace(/^https?:\/\/[^\/]+/,'')||r.pageUrl):'';
+    var main='<tr class="main'+(state.open[r.id]?" open":"")+'" onclick="toggle(\''+r.id+'\')">'+
+      '<td><span class="exp">&#9656;</span></td>'+
+      '<td><span class="badge b-'+r.cat+'">'+r.cat+'</span></td>'+
+      '<td>'+esc(r.dd)+'</td>'+
+      '<td class="nm">'+esc(r.name)+'</td>'+
+      '<td>'+(r.email?'<a href="mailto:'+esc(r.email)+'" onclick="event.stopPropagation()">'+esc(r.email)+'</a>':"—")+'</td>'+
+      '<td>'+esc(r.phone||"—")+'</td>'+
+      '<td>'+esc(r.type||"—")+'</td>'+
+      '<td>'+esc(r.size||"—")+'</td>'+
+      '<td>'+esc(r.zip||"—")+'</td>'+
+      '<td class="msgcell'+(pageHost?' has':'')+'">'+(r.pageUrl?'<a href="'+esc(r.pageUrl)+'" target="_blank" rel="noopener" onclick="event.stopPropagation()">'+esc(clip(pageHost,32))+'</a>':"—")+'</td>'+
+      '<td>'+esc(r.form||"—")+'</td>'+
+      '<td class="msgcell'+(mc?' has':'')+'">'+(mc?esc(clip(mc,46)):"—")+'</td>'+
+      '<td><button class="btn sm" onclick="event.stopPropagation();dlOne(\''+r.id+'\')">&#11015; CSV</button></td></tr>';
+    if(!state.open[r.id])return main;
+    var H='<tr class="det-row"><td colspan="13"><div class="det-full">';
+    if(r.cat!=="Spam"){
+      H+='<div class="msgblock"><div class="dlabel">Customer message</div>'+
+         (r.msg?'<div class="msgtext">&ldquo;'+esc(r.msg)+'&rdquo;</div>':'<div class="msgnone">&mdash; this lead left no message on the form &mdash;</div>')+'</div>';
+    }else{
+      H+='<div class="msgblock" style="border-left-color:var(--rd)"><div class="dlabel" style="color:var(--rd)">Spam content</div><div class="msgtext" style="font-style:normal">'+esc(r.msg)+'</div></div>';
+    }
+    if(r.raw&&r.raw.length){
+      H+='<div class="dsec"><div class="dlabel">Complete submission &mdash; every field exactly as submitted</div><table class="rawt">';
+      r.raw.forEach(function(p){H+='<tr><td class="rk">'+esc(p[0])+'</td><td class="rv">'+(p[1]?esc(p[1]):'<i>(left blank)</i>')+'</td></tr>';});
+      H+='</table></div>';
+    }
+    H+='<div class="dsec"><div class="dlabel">Source &amp; device</div><div class="kv">';
+    if(r.submitted||r.pageUrl||r.browser||r.ip){
+      H+=kvrow("Submitted on form",r.submitted)+kvrow("Landing page",r.pageUrl)+kvrow("Browser / device",r.browser)+kvrow("IP address",r.ip)+kvrow("Region (from ZIP / area code)",r.region);
+    }else{
+      H+=(r.region?kvrow("Region (from ZIP / area code)",r.region):"")+'<div class="kvn">Device metadata (page URL, browser, IP) was not included in this notification email template.</div>';
+    }
+    H+='</div></div>';
+    if(r.note)H+='<div class="dsec"><div class="dlabel">Analyst note</div><div style="font-size:12.5px">'+esc(r.note)+'</div></div>';
+    H+='<div class="dsec"><div class="dlabel">Submission record</div><div class="kv">'+
+       kvrow("Form",r.form)+kvrow("Submission ID",r.wpid?("WP #"+r.wpid):"\u2014 not stored in WordPress")+kvrow("Status",r.is_read?"Read":"Unread")+kvrow("Received",r.received)+kvrow("Record ID",r.id)+'</div>';
+    H+='<div class="dactions">';
+    if(r.wpid)H+='<a class="btn sm" href="'+WPBASE+'" target="_blank" rel="noopener" onclick="event.stopPropagation()">&#8599; Open WordPress submissions</a>';
+    H+='<button class="btn sm" onclick="event.stopPropagation();dlOne(\''+r.id+'\')">&#11015; Download this record (CSV)</button>';
+    H+='</div></div>';
+    H+='</div></td></tr>';
+    return main+H;
+  }).join("");
+}
+function toggle(id){state.open[id]=!state.open[id];render();}
+Array.prototype.slice.call(document.querySelectorAll("th[data-k]")).forEach(function(th){
+  th.addEventListener("click",function(){var k=th.getAttribute("data-k");if(state.sortK===k)state.sortDir*=-1;else{state.sortK=k;state.sortDir=1;}render();});
+});
+var COLS=["id","cat","dd","time","name","email","phone","zip","type","size","surface","form","msg","note","region","submitted","pageUrl","browser","ip","stype","subject","received"];
+var HEAD=["Record ID","Category","Date","Time","Name / Source","Email","Phone","ZIP","Looking For","Size","Surface","Form","Customer Message","Note","Region","Submitted On Form","Landing Page","Browser","IP Address","Spam Type","Email Subject","Received"];
+function recCSV(list){
+  var out=[HEAD.map(csvCell).join(",")];
+  list.forEach(function(r){out.push(COLS.map(function(c){return csvCell(r[c]);}).join(","));});
+  return "﻿"+out.join("\r\n");
+}
+function saveBlob(txt,name,mime){
+  var b=new Blob([txt],{type:mime}),u=URL.createObjectURL(b),a=document.createElement("a");
+  a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(u);},1000);
+}
+function dlOne(id){
+  var r=DATA.filter(function(x){return x.id===id;})[0];if(!r)return;
+  var lines=[];
+  lines.push("STEEL & STUD - LEAD RECORD "+r.id);
+  lines.push("Category,"+csvCell(r.cat));
+  lines.push("");
+  lines.push("FIELD,VALUE");
+  COLS.forEach(function(c,i){if(r[c])lines.push(csvCell(HEAD[i])+","+csvCell(r[c]));});
+  if(r.raw&&r.raw.length){lines.push("");lines.push("COMPLETE SUBMISSION (raw form fields)");lines.push("FORM FIELD,VALUE");
+    r.raw.forEach(function(p){lines.push(csvCell(p[0])+","+csvCell(p[1]));});}
+  saveBlob("﻿"+lines.join("\r\n"),"lead-"+id+"-"+(r.name||"record").replace(/[^a-z0-9]+/gi,"_").slice(0,28)+".csv","text/csv");
+}
+function dlAll(){saveBlob(recCSV(applyFilters()),"steelandstud-leads-filtered.csv","text/csv");}
+function dlPage(){saveBlob("<!DOCTYPE html>\n"+document.documentElement.outerHTML,"Steel-Stud-Leads-Dashboard.html","text/html");}
+function openRefresh(){document.getElementById("rfModal").classList.add("on");}
+function closeRefresh(){document.getElementById("rfModal").classList.remove("on");}
+(function init(){
+  var types=["All"].concat(uniq(DATA.map(function(r){return r.type;})).filter(Boolean).sort());
+  document.getElementById("fType").innerHTML=types.map(function(t){return '<option>'+esc(t)+'</option>';}).join("");
+  var forms=["All"].concat(uniq(DATA.map(function(r){return r.form;})).filter(Boolean).sort());
+  document.getElementById("fForm").innerHTML=forms.map(function(t){return '<option>'+esc(t)+'</option>';}).join("");
+  document.getElementById("sub").textContent="Last 30 days ("+META.rangeStart+" to "+META.rangeEnd+") \u00b7 WordPress form submissions \u00b7 generated "+META.generated;
+  document.getElementById("foot").innerHTML="Snapshot of steelandstud.com WordPress form submissions ("+META.rangeStart+" to "+META.rangeEnd+") &mdash; "+DATA.length+" records ("+DATA.filter(function(r){return r.cat==="Real";}).length+" real, "+DATA.filter(function(r){return r.cat==="Test";}).length+" test, "+DATA.filter(function(r){return r.cat==="Spam";}).length+" spam). Generated "+META.generated+". Contact data shown for the site owner\u2019s follow-up only.";
+  document.getElementById("fSearch").addEventListener("keydown",function(e){if(e.key==="Enter")render();});
+  render();
+})();
+</script>
+</body></html>
